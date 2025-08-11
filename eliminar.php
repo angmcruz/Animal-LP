@@ -45,5 +45,5 @@ if ($ok && $foto) {
 $conn->close();
 
 // cambiar a listar que no esta listo todavia
-header("Location: index.php?msg=eliminado");
+header("Location: listar.php?msg=eliminado");
 exit;
