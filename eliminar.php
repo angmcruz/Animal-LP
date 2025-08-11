@@ -2,23 +2,23 @@
 // eliminar.php
 $servername = "localhost";
 $username   = "root";
-$password   = "";
-$dbname     = "AnimalesLP";
+$password   = "root";
+$dbname     = "animaleslp";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
-    die("❌ Error de conexión: " . $conn->connect_error);
+  die("❌ Error de conexión: " . $conn->connect_error);
 }
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_POST['id'])) {
-    die("Solicitud inválida");
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_POST['idAnimal'])) {
+  die("Solicitud inválida: falta idAnimal.");
 }
 
-$id = (int) $_POST['id'];
+$id = (int) $_POST['idAnimal'];
 
-// Buscar la foto
+// borramos foto fisica
 $foto = null;
-$stmt = $conn->prepare("SELECT foto FROM animales WHERE id = ?");
+$stmt = $conn->prepare("SELECT foto FROM animales WHERE idAnimal = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
 $stmt->bind_result($foto);
@@ -26,27 +26,24 @@ $existe = $stmt->fetch();
 $stmt->close();
 
 if (!$existe) {
-    $conn->close();
-    die("El registro no existe.");
+  $conn->close();
+  die("El registro no existe.");
 }
 
-// Borrar registro
-$stmt = $conn->prepare("DELETE FROM animales WHERE id = ?");
+// delete registro
+$stmt = $conn->prepare("DELETE FROM animales WHERE idAnimal = ?");
 $stmt->bind_param("i", $id);
 $ok = $stmt->execute();
 $stmt->close();
 
-// Borrar archivo físico
+
 if ($ok && $foto) {
-    $rutaAbs = __DIR__ . "/imagenes/" . $foto;
-    if (is_file($rutaAbs)) {
-        unlink($rutaAbs);
-    }
+  $ruta = __DIR__ . "/imagenes/" . $foto;
+  if (is_file($ruta)) { @unlink($ruta); }
 }
 
 $conn->close();
 
-// Volver al listado
-header("Location: listar.php?msg=eliminado");
+// cambiar a listar que no esta listo todavia
+header("Location: index.php?msg=eliminado");
 exit;
-?>
