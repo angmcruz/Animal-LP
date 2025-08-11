@@ -48,21 +48,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 if ($stmt->execute()) {
                     echo "<div style='text-align:center; font-family:Arial; margin-top:20px;'>
                             <h3>✅ Animal registrado con éxito</h3>
-                            <a href='registro_animales.html'>Volver al formulario</a>
+                            <a href='registro.html'>Volver al formulario</a>
                           </div>";
                 } else {
-                    echo "❌ Error al guardar: " . $conn->error;
+                    echo "Error al guardar: " . $conn->error;
                 }
 
                 $stmt->close();
             } else {
-                echo "❌ Error al subir la imagen.";
+                echo "Error al subir la imagen.";
             }
         } else {
-            echo "❌ Formato de imagen no permitido. Solo JPG, JPEG, PNG o GIF.";
+            echo "Formato de imagen no permitido. Solo JPG, JPEG, PNG o GIF.";
         }
     } else {
-        echo "❌ No se recibió ninguna imagen o hubo un error al subirla.";
+        echo " No se recibió ninguna imagen o hubo un error al subirla.";
     }
 }
 
