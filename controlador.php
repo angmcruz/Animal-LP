@@ -2,8 +2,8 @@
 // Datos de conexión a la base de datos
 $servername = "localhost";
 $username = "root"; // Cambia si tu usuario es distinto
-$password = "";     // Cambia si tu contraseña es distinta
-$dbname = "AnimalesLP";
+$password = "root";     // Cambia si tu contraseña es distinta
+$dbname = "animaleslp";
 
 // Crear conexión
 $conn = new mysqli($servername, $username, $password, $dbname);
