@@ -39,7 +39,9 @@ if ($result && $result->num_rows > 0) {
         $animales[] = $row;
     }
 }
-
+//solo para probar en postman
+ //header('Content-Type: application/json');
+//echo json_encode($animales, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 $conn->close();
 ?>
 
