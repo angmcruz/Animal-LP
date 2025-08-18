@@ -1,18 +1,6 @@
 <?php
-// Configuración de base de datos
-$servername = "localhost";
-$username = "root";
-$password = "root";
-$dbname = "animaleslp";
-
-// Crear conexión
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Verificar conexión
-if ($conn->connect_error) {
-    die("❌ Error de conexión: " . $conn->connect_error);
-}
-
+require_once __DIR__ . '/database.php';
+$conn = db();
 // Variables para búsqueda
 $busqueda = "";
 $animales = [];

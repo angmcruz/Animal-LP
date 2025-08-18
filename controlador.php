@@ -1,45 +1,33 @@
 <?php
-// Datos de conexión a la base de datos
-$servername = "localhost";
-$username = "root"; // Cambia si tu usuario es distinto
-$password = "root";     // Cambia si tu contraseña es distinta
-$dbname = "animaleslp";
+require_once __DIR__ . '/database.php';
+$conn = db();
 
-// Crear conexión
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Verificar conexión
-if ($conn->connect_error) {
-    die("❌ Error de conexión: " . $conn->connect_error);
-}
-
-// Procesar solo si el formulario fue enviado
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    // Recibir datos del formulario
+    
     $nombre     = $_POST["nombre"];
     $tipo       = $_POST["tipo"];
     $ecosistema = $_POST["ecosistema"];
     $ubicacion  = $_POST["ubicacion"];
     $descripcion = $_POST["descripcion"];
 
-    // Manejo de la foto
+  
     if (isset($_FILES["foto"]) && $_FILES["foto"]["error"] === 0) {
 
-        // Crear nombre único para la imagen
+       
         $nombreArchivo = time() . "_" . basename($_FILES["foto"]["name"]);
         $rutaDestino = "imagenes/" . $nombreArchivo;
 
-        // Verificar formato de imagen
+        
         $tipoArchivo = strtolower(pathinfo($rutaDestino, PATHINFO_EXTENSION));
         $formatosPermitidos = ["jpg", "jpeg", "png", "gif"];
 
         if (in_array($tipoArchivo, $formatosPermitidos)) {
 
-            // Mover imagen a carpeta 'uploads'
+            
             if (move_uploaded_file($_FILES["foto"]["tmp_name"], $rutaDestino)) {
 
-                // Insertar datos en la tabla
+                
                 $sql = "INSERT INTO animales (nombre, tipo, ecosistema, ubicacion, foto, descripcion)
                         VALUES (?, ?, ?, ?, ?, ?)";
                 $stmt = $conn->prepare($sql);

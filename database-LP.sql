@@ -13,3 +13,7 @@ create table animales (
     descripcion varchar (500)
 );
 
+ALTER TABLE animales
+  ADD COLUMN lat DECIMAL(10,8) NULL,
+  ADD COLUMN lng DECIMAL(11,8) NULL;
+

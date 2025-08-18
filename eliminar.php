@@ -1,14 +1,6 @@
 <?php
-// eliminar.php
-$servername = "localhost";
-$username   = "root";
-$password   = "root";
-$dbname     = "animaleslp";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-if ($conn->connect_error) {
-  die("❌ Error de conexión: " . $conn->connect_error);
-}
+require_once __DIR__ . '/database.php';
+$conn = db();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_POST['idAnimal'])) {
   die("Solicitud inválida: falta idAnimal.");
