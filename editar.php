@@ -15,11 +15,15 @@ $id = (int) $_GET['id'];
 
 // Procesar actualización
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $nombre = $_POST["nombre"];
-    $tipo = $_POST["tipo"];
-    $ecosistema = $_POST["ecosistema"];
-    $ubicacion = $_POST["ubicacion"];
+    $nombre      = $_POST["nombre"];
+    $tipo        = $_POST["tipo"];
+    $ecosistema  = $_POST["ecosistema"];
+    $ubicacion   = $_POST["ubicacion"];
     $descripcion = $_POST["descripcion"];
+
+    
+    $lat = isset($_POST["lat"]) && $_POST["lat"] !== '' ? (float)$_POST["lat"] : null;   
+    $lng = isset($_POST["lng"]) && $_POST["lng"] !== '' ? (float)$_POST["lng"] : null;   
     
     $fotoActual = $_POST["foto_actual"];
     $nuevaFoto = $fotoActual; // Por defecto mantener la foto actual
@@ -42,10 +46,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
     }
     
-    // Actualizar en base de datos
-    $sql = "UPDATE animales SET nombre=?, tipo=?, ecosistema=?, ubicacion=?, foto=?, descripcion=? WHERE idAnimal=?";
+    // Actualizar en base de datos (incluye lat y lng)
+    $sql = "UPDATE animales 
+            SET nombre=?, tipo=?, ecosistema=?, ubicacion=?, foto=?, descripcion=?, lat=?, lng=?
+            WHERE idAnimal=?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssssssi", $nombre, $tipo, $ecosistema, $ubicacion, $nuevaFoto, $descripcion, $id);
+    // 6 strings + 2 doubles + 1 int
+    $stmt->bind_param("ssssssddi", $nombre, $tipo, $ecosistema, $ubicacion, $nuevaFoto, $descripcion, $lat, $lng, $id);
     
     if ($stmt->execute()) {
         $mensaje = "<div class='alert alert-success'>✅ Animal actualizado con éxito</div>";
@@ -167,7 +174,7 @@ $conn->close();
                                 </select>
                             </div>
 
-                            <!-- Ubicación -->
+                            <!-- Ubicación (texto libre) -->
                             <div class="mb-3">
                                 <label for="ubicacion" class="form-label">Ubicación</label>
                                 <input type="text" 
@@ -179,8 +186,30 @@ $conn->close();
                                        required>
                             </div>
 
+                            <!-- NUEVO: Coordenadas -->
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Latitud</label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="lat" 
+                                           name="lat" 
+                                           value="<?php echo htmlspecialchars($animal['lat'] ?? ''); ?>" 
+                                           placeholder="-0.1807">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Longitud</label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="lng" 
+                                           name="lng" 
+                                           value="<?php echo htmlspecialchars($animal['lng'] ?? ''); ?>" 
+                                           placeholder="-78.4678">
+                                </div>
+                            </div>
+
                             <!-- Descripción -->
-                            <div class="mb-3">
+                            <div class="mb-3 mt-3">
                                 <label for="descripcion" class="form-label">Descripción</label>
                                 <textarea class="form-control" 
                                           id="descripcion" 
@@ -250,7 +279,15 @@ $conn->close();
                             <span class="badge bg-primary"><?php echo ucfirst(htmlspecialchars($animal['tipo'])); ?></span>
                         </p>
                         <p><strong>Ecosistema:</strong> <?php echo ucfirst(htmlspecialchars($animal['ecosistema'])); ?></p>
-                        <p class="mb-0"><strong>Ubicación:</strong> <?php echo htmlspecialchars($animal['ubicacion']); ?></p>
+                        <p><strong>Ubicación:</strong> <?php echo htmlspecialchars($animal['ubicacion']); ?></p>
+                        <!-- NUEVO: Mostrar coordenadas -->
+                        <p class="mb-0"><strong>Lat/Lng:</strong>
+                            <?php
+                              $latTxt = isset($animal['lat']) ? $animal['lat'] : '—';
+                              $lngTxt = isset($animal['lng']) ? $animal['lng'] : '—';
+                              echo htmlspecialchars($latTxt) . ', ' . htmlspecialchars($lngTxt);
+                            ?>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -263,20 +300,23 @@ $conn->close();
     
     <!-- Script para preview de nueva imagen -->
     <script>
-        document.getElementById('foto').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const preview = document.querySelector('.foto-preview');
-                    if (preview) {
-                        preview.src = e.target.result;
-                        preview.style.display = 'block';
+        const fileInput = document.getElementById('foto');
+        if (fileInput) {
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const preview = document.querySelector('.foto-preview');
+                        if (preview) {
+                            preview.src = e.target.result;
+                            preview.style.display = 'block';
+                        }
                     }
+                    reader.readAsDataURL(file);
                 }
-                reader.readAsDataURL(file);
-            }
-        });
+            });
+        }
     </script>
 
 </body>

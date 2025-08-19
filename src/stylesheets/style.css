@@ -1,12 +1,23 @@
  #map { 
    width: 100%; 
-   height: 580px; 
+   height: 450px; 
    border: 2px solid #ddd;
   border-radius: 8px;
  }
 
 .col-md-4 {
-
-    height: 500px;  
+    height: 400px;  
 }
 
+#mapRegistro {
+  width: 100%;
+  height: 300px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.leaflet-container {
+  width: 100% ;
+  height: 100% ;
+}

@@ -70,7 +70,7 @@ $conn->close();
                         <h4 class="mb-0">🦎 Lista de Animales de Ecuador</h4>
                     </div>
                     <div class="col-auto">
-                        <a href="index.php" class="btn btn-light btn-sm">
+                        <a href="index.html" class="btn btn-light btn-sm">
                             🏠 Inicio
                         </a>
                         <a href="registro.html" class="btn btn-warning btn-sm">

@@ -10,8 +10,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $ecosistema = $_POST["ecosistema"];
     $ubicacion  = $_POST["ubicacion"];
     $descripcion = $_POST["descripcion"];
+    // Coord (pueden ser null)
+    $lat = isset($_POST["lat"]) && $_POST["lat"] !== '' ? (float)$_POST["lat"] : null;
+    $lng = isset($_POST["lng"]) && $_POST["lng"] !== '' ? (float)$_POST["lng"] : null;
 
-  
+  // manejo de la foto
     if (isset($_FILES["foto"]) && $_FILES["foto"]["error"] === 0) {
 
        
@@ -28,15 +31,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if (move_uploaded_file($_FILES["foto"]["tmp_name"], $rutaDestino)) {
 
                 
-                $sql = "INSERT INTO animales (nombre, tipo, ecosistema, ubicacion, foto, descripcion)
-                        VALUES (?, ?, ?, ?, ?, ?)";
+                $sql = "INSERT INTO animales (nombre, tipo, ecosistema, ubicacion, foto, descripcion, lat, lng)
+                        VALUES (?, ?, ?, ?, ?, ?, ? , ?)";
                 $stmt = $conn->prepare($sql);
-                $stmt->bind_param("ssssss", $nombre, $tipo, $ecosistema, $ubicacion, $nombreArchivo, $descripcion);
+                $stmt->bind_param("ssssssdd", $nombre, $tipo, $ecosistema, $ubicacion, $nombreArchivo, $descripcion,$lat, $lng);
 
                 if ($stmt->execute()) {
                     echo "<div style='text-align:center; font-family:Arial; margin-top:20px;'>
                             <h3>✅ Animal registrado con éxito</h3>
-                            <a href='registro.html'>Volver al formulario</a>
+                            <a href='listar.php'>Ver Lista de Animales</a>
                           </div>";
                 } else {
                     echo "Error al guardar: " . $conn->error;
