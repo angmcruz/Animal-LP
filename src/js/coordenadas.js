@@ -19,7 +19,7 @@ function putMarker(lat, lng) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Inicializar mapa
+  
   mapReg = L.map('mapRegistro').setView(EC, 6);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors'
@@ -28,13 +28,13 @@ document.addEventListener('DOMContentLoaded', () => {
   putMarker(EC[0], EC[1]);
   setInputs(EC[0], EC[1]);
 
-  // Click en el mapa
+  
   mapReg.on('click', (e) => {
     putMarker(e.latlng.lat, e.latlng.lng);
     setInputs(e.latlng.lat, e.latlng.lng);
   });
 
-  // Botón "Usar mi ubicación"
+  
   document.getElementById('btnGeo').onclick = () => {
     if (!navigator.geolocation) return alert('Geolocalización no soportada');
     navigator.geolocation.getCurrentPosition(pos => {
