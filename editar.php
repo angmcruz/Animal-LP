@@ -57,7 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if ($stmt->execute()) {
         $mensaje = "<div class='alert alert-success'>✅ Animal actualizado con éxito</div>";
     } else {
-        $mensaje = "<div class='alert alert-danger'>❌ Error al actualizar: " . $conn->error . "</div>";
+        $mensaje = "<div class='alert alert-danger'>⚠ Error al actualizar: " . $conn->error . "</div>";
     }
     $stmt->close();
 }
@@ -87,6 +87,7 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Animal - <?php echo htmlspecialchars($animal['nombre']); ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         .foto-preview {
             max-width: 200px;
@@ -97,6 +98,12 @@ $conn->close();
         }
         .card-header {
             background: linear-gradient(135deg, #ffc107, #fd7e14);
+        }
+        #mapEditar {
+            height: 300px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -186,7 +193,7 @@ $conn->close();
                                        required>
                             </div>
 
-                            <!-- NUEVO: Coordenadas -->
+                            <!-- Coordenadas -->
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label class="form-label">Latitud</label>
@@ -208,8 +215,25 @@ $conn->close();
                                 </div>
                             </div>
 
+                            <!-- Mapa para seleccionar ubicación -->
+                            <div class="mt-3 mb-3">
+                                <label class="form-label">Seleccionar ubicación en el mapa</label>
+                                <div id="mapEditar"></div>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-info btn-sm" id="btnGeoEditar">
+                                        📍 Usar mi ubicación actual
+                                    </button>
+                                    <button type="button" class="btn btn-secondary btn-sm" id="btnCentrarEcuador">
+                                        🇪🇨 Centrar en Ecuador
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger btn-sm" id="btnLimpiarCoordenadas">
+                                        🗑️ Limpiar coordenadas
+                                    </button>
+                                </div>
+                            </div>
+
                             <!-- Descripción -->
-                            <div class="mb-3 mt-3">
+                            <div class="mb-3">
                                 <label for="descripcion" class="form-label">Descripción</label>
                                 <textarea class="form-control" 
                                           id="descripcion" 
@@ -280,13 +304,15 @@ $conn->close();
                         </p>
                         <p><strong>Ecosistema:</strong> <?php echo ucfirst(htmlspecialchars($animal['ecosistema'])); ?></p>
                         <p><strong>Ubicación:</strong> <?php echo htmlspecialchars($animal['ubicacion']); ?></p>
-                        <!-- NUEVO: Mostrar coordenadas -->
+                        <!-- Mostrar coordenadas -->
                         <p class="mb-0"><strong>Lat/Lng:</strong>
-                            <?php
-                              $latTxt = isset($animal['lat']) ? $animal['lat'] : '—';
-                              $lngTxt = isset($animal['lng']) ? $animal['lng'] : '—';
-                              echo htmlspecialchars($latTxt) . ', ' . htmlspecialchars($lngTxt);
-                            ?>
+                            <span id="coordenadasDisplay">
+                                <?php
+                                  $latTxt = isset($animal['lat']) ? $animal['lat'] : '—';
+                                  $lngTxt = isset($animal['lng']) ? $animal['lng'] : '—';
+                                  echo htmlspecialchars($latTxt) . ', ' . htmlspecialchars($lngTxt);
+                                ?>
+                            </span>
                         </p>
                     </div>
                 </div>
@@ -297,6 +323,8 @@ $conn->close();
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     <!-- Script para preview de nueva imagen -->
     <script>
@@ -317,6 +345,149 @@ $conn->close();
                 }
             });
         }
+    </script>
+
+    <!-- Script para el mapa interactivo -->
+    <script>
+        let mapEditar;
+        let markerEditar;
+
+        // Coordenadas actuales del animal (si existen)
+        const coordenadasActuales = {
+            lat: <?php echo !empty($animal['lat']) ? $animal['lat'] : 'null'; ?>,
+            lng: <?php echo !empty($animal['lng']) ? $animal['lng'] : 'null'; ?>
+        };
+
+        // Inicializar mapa
+        function initMapEditar() {
+            // Centro inicial: coordenadas actuales del animal o centro de Ecuador
+            let centerLat = coordenadasActuales.lat || -1.8312;
+            let centerLng = coordenadasActuales.lng || -78.1834;
+            let initialZoom = coordenadasActuales.lat ? 10 : 6;
+
+            mapEditar = L.map('mapEditar').setView([centerLat, centerLng], initialZoom);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(mapEditar);
+
+            // Si hay coordenadas actuales, mostrar marcador
+            if (coordenadasActuales.lat && coordenadasActuales.lng) {
+                markerEditar = L.marker([coordenadasActuales.lat, coordenadasActuales.lng])
+                    .addTo(mapEditar)
+                    .bindPopup('Ubicación actual del animal')
+                    .openPopup();
+            }
+
+            // Evento click en el mapa
+            mapEditar.on('click', function(e) {
+                const lat = e.latlng.lat.toFixed(6);
+                const lng = e.latlng.lng.toFixed(6);
+
+                // Actualizar campos de entrada
+                document.getElementById('lat').value = lat;
+                document.getElementById('lng').value = lng;
+
+                // Actualizar display de coordenadas
+                updateCoordenadasDisplay(lat, lng);
+
+                // Remover marcador anterior y crear uno nuevo
+                if (markerEditar) {
+                    mapEditar.removeLayer(markerEditar);
+                }
+
+                markerEditar = L.marker([lat, lng])
+                    .addTo(mapEditar)
+                    .bindPopup(`Lat: ${lat}<br>Lng: ${lng}`)
+                    .openPopup();
+            });
+        }
+
+        // Actualizar display de coordenadas en el panel lateral
+        function updateCoordenadasDisplay(lat, lng) {
+            document.getElementById('coordenadasDisplay').textContent = `${lat}, ${lng}`;
+        }
+
+        // Usar geolocalización
+        document.getElementById('btnGeoEditar').addEventListener('click', function() {
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const lat = position.coords.latitude.toFixed(6);
+                    const lng = position.coords.longitude.toFixed(6);
+
+                    // Actualizar mapa
+                    mapEditar.setView([lat, lng], 15);
+
+                    // Actualizar campos
+                    document.getElementById('lat').value = lat;
+                    document.getElementById('lng').value = lng;
+
+                    // Actualizar display
+                    updateCoordenadasDisplay(lat, lng);
+
+                    // Actualizar marcador
+                    if (markerEditar) {
+                        mapEditar.removeLayer(markerEditar);
+                    }
+
+                    markerEditar = L.marker([lat, lng])
+                        .addTo(mapEditar)
+                        .bindPopup('Tu ubicación actual')
+                        .openPopup();
+
+                }, function(error) {
+                    alert('Error obteniendo ubicación: ' + error.message);
+                });
+            } else {
+                alert('Geolocalización no soportada por este navegador');
+            }
+        });
+
+        // Centrar en Ecuador
+        document.getElementById('btnCentrarEcuador').addEventListener('click', function() {
+            mapEditar.setView([-1.8312, -78.1834], 6);
+        });
+
+        // Limpiar coordenadas
+        document.getElementById('btnLimpiarCoordenadas').addEventListener('click', function() {
+            document.getElementById('lat').value = '';
+            document.getElementById('lng').value = '';
+            updateCoordenadasDisplay('—', '—');
+            
+            if (markerEditar) {
+                mapEditar.removeLayer(markerEditar);
+                markerEditar = null;
+            }
+        });
+
+        // Sincronizar campos de texto con el mapa
+        function syncMapWithInputs() {
+            const lat = parseFloat(document.getElementById('lat').value);
+            const lng = parseFloat(document.getElementById('lng').value);
+
+            if (!isNaN(lat) && !isNaN(lng)) {
+                mapEditar.setView([lat, lng], 10);
+                
+                if (markerEditar) {
+                    mapEditar.removeLayer(markerEditar);
+                }
+
+                markerEditar = L.marker([lat, lng])
+                    .addTo(mapEditar)
+                    .bindPopup(`Lat: ${lat}<br>Lng: ${lng}`);
+
+                updateCoordenadasDisplay(lat.toFixed(6), lng.toFixed(6));
+            }
+        }
+
+        // Eventos para sincronizar cuando se escriba manualmente
+        document.getElementById('lat').addEventListener('blur', syncMapWithInputs);
+        document.getElementById('lng').addEventListener('blur', syncMapWithInputs);
+
+        // Inicializar mapa cuando la página cargue
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(initMapEditar, 100);
+        });
     </script>
 
 </body>
