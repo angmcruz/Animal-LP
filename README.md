@@ -35,6 +35,6 @@ Antes de ejecutar el proyecto, se necesita contar con:
    ```http://localhost:8000```
 
 ## Autores
--**Cruz Naranjo Angie Melissa**
--**Murillo Mora Javier Josué**
--**Murillo Murillo Erick Adrián**
+- Cruz Naranjo Angie Melissa
+- Murillo Mora Javier Josué
+- Murillo Murillo Erick Adrián
