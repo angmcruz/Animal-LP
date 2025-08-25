@@ -1,6 +1,6 @@
 # Animal-LP  
 
-**Proyecto:** Página Web para registrar especies que habitan en bosques, lagos y playas del Ecuador.  
+Página Web para registrar especies que habitan en bosques, lagos y playas del Ecuador.  
 
 ## Descripción  
 Este proyecto tiene como objetivo desarrollar una plataforma web para registrar y visualizar especies presentes en el Ecuador. Busca **concientizar al público general** sobre la importancia de estas especies y fomentar la **protección de aquellas en peligro de extinción**.  
