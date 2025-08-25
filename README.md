@@ -29,8 +29,10 @@ Antes de ejecutar el proyecto, se necesita contar con:
 2. Crear la base de datos con el archivo SQL incluido.
 3. Configurar las credenciales de conexión en database.php.
 4. Abrir una terminal en la carpeta del proyecto y ejecutar:
-   ```bash php -S localhost:8000
-5. Acceder desde el navegador a: http://localhost:8000
+    ```bash
+   php -S localhost:8000```
+5. Acceder desde el navegador a:
+   ```http://localhost:8000```
 
 ## Autores
 -Cruz Naranjo, Angie Melissa
