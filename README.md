@@ -1,38 +1,40 @@
-# Animal-LP
-Proyecto: Página Web para registrar especies que se encuentran en bosques, lagos y playas del Ecuador.
+# Animal-LP  
 
-Este Proyecto tiene como objetivo desarrollar una Página Web sobre las especies que se encuentran en el Ecuador para la concientización del público general sobre estos y la protección de estas que se encuentren en peligro de extinción. 
+**Proyecto:** Página Web para registrar especies que habitan en bosques, lagos y playas del Ecuador.  
 
-Aspectos Principales:
-- Página principal: que muestra las opciones para que los usuarios decidan que acciones realizar.
-- Crear registros: Añadir nuevos animales al catálogo con la información requerida.
-- Listar registros: Ver todos los animales registrados en una vista general.
-- Editar registros: Modificar la información de un animal existente.
-- Eliminar registros: Borrar toda la información de un animal de la base de datos.
+## Descripción  
+Este proyecto tiene como objetivo desarrollar una plataforma web para registrar y visualizar especies presentes en el Ecuador. Busca **concientizar al público general** sobre la importancia de estas especies y fomentar la **protección de aquellas en peligro de extinción**.  
 
-Lenguajes Utilizados:
-- PHP
-- MySQL
-- HTML, CSS, JavaScript
+## Funcionalidades principales  
+- **Página principal:** Muestra las opciones disponibles para que los usuarios decidan qué acción realizar.  
+- **Crear registros:** Permite añadir nuevos animales al catálogo con la información requerida.  
+- **Listar registros:** Visualizar todos los animales registrados en una vista general.  
+- **Editar registros:** Modificar la información de un animal existente.  
+- **Eliminar registros:** Borrar un registro de la base de datos.  
 
-Requisitos y uso:
-Se requieren estos entornos previos a uso del mismo:
-XAMPP
-Apache
-PHP
-MySQL
+## Tecnologías utilizadas  
+- **Backend:** PHP, MySQL  
+- **Frontend:** HTML, CSS, JavaScript  
+- **Frameworks y librerías:**  
+  - [Bootstrap 5](https://getbootstrap.com/) → Para el diseño responsivo y componentes de la interfaz.  
+  - [Leaflet.js](https://leafletjs.com/) → Para la integración del mapa interactivo y selección de coordenadas.  
 
-1. Clonar el repositorio.
-2. Crear la base de datos.
-3. Cambiar las credenciales de la base de datos en el archivo database.php.
-4. copiar la carpeta del proyecto en el directorio del servidor web.
-5. abrir tu aplicación preferida y correr el programa.
+## Requisitos previos  
+Antes de ejecutar el proyecto, se necesita contar con:  
+- Tener instalado **PHP** y **MySQL** en el sistema (puede ser con WAMP, MAMP o instalación manual).  
+- Un **navegador web** actualizado.  
 
-Dependencias o Librerías: 
-Bootstrap 5: Para el diseño y los componentes de la interfaz de usuario.
-Leaflet.js: Para el mapa interactivo y la selección de coordenadas.
+##  Instalación y uso  
+1. Clonar este repositorio.  
+2. Crear la base de datos con el archivo SQL incluido.
+3.Configurar las credenciales de conexión en database.php.
+4. Abrir una terminal en la carpeta del proyecto y ejecutar:
+ ```bash
+  php -S localhost:8000
+5. 
+6. 
 
-Autores:
-Cruz Naranjo Angie Melissa
-Murillo Mora Javier Josue
-Murillo Murillo Erick Adrian
+## Autores
+-Cruz Naranjo, Angie Melissa
+-Murillo Mora, Javier Josué
+-Murillo Murillo, Erick Adrián
